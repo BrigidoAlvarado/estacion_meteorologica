@@ -11,7 +11,7 @@
 #define MQ7_PIN A0
 #define MQ135_PIN A1
 #define MQ131_PIN A2
-#define MQ136_PIN A3   // <-- NUEVO: Sensor de Azufre (SO2 / H2S)
+#define MQ136_PIN A5   // <-- NUEVO: Sensor de Azufre (SO2 / H2S)
 // --- Objetos ---
 SoftwareSerial pmsSerial(PMS_RX_PIN, PMS_TX_PIN); 
 DHTStable dht;
