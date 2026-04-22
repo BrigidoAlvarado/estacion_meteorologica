@@ -6,8 +6,8 @@
 // --- Pines ---
 // Serial1 (Pins 18/19) se usa para enviar datos al NodeMCU.
 #define DHTPIN 4
-#define PMS_RX_PIN 13    
-#define PMS_TX_PIN 12    
+#define PMS_RX_PIN 12    
+#define PMS_TX_PIN 13    
 #define MQ7_PIN A0
 #define MQ135_PIN A1
 #define MQ131_PIN A2
