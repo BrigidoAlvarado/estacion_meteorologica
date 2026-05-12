@@ -240,9 +240,12 @@ void resetAccumulator() {
   acc.mq135_adc = 0;
   acc.count = 0;
 }
-
-//  ENVÍO AL NODEMCU, serializa la trama CSV y la transmite por Serial1
-//  El formato es: T,H,CO,O3,MQ135_ADC,NH3,NOx,CO2,PM1,PM25,PM10,SO2
+// --- FUNCIONES AUXILIARES DE SENSORES Y ENVÍO ---
+/**
+ * Empaqueta y envía todos los datos de sensores al NodeMCU a través de Serial1.
+ * Formato de la trama (CSV): 
+ * T,H,CO,O3,MQ135_ADC,NH3,NOx,CO2,PM1,PM25,PM10,SO2
+ */
 void sendDataToNodeMCU(float ppm_co, float ppm_o3, int mq135_adc_avg) {
   char t_str[8], h_str[8], co_str[8], o3_str[8];
   char nh3_str[8], nox_str[8], co2_str[8], so2_str[8];
@@ -338,7 +341,6 @@ bool readPMSDataToGlobal() {
 }
 
 //  LECTURA DHT11 
-
 bool readDhtWithRetry() {
   for (byte i = 0; i < 3; i++) {
     if (dht.read11(DHTPIN) == 0) {
@@ -355,7 +357,6 @@ bool readDhtWithRetry() {
   return false;
 }
 
-//  CÁLCULO DE GASES MQ135 — estimación lineal a partir del ADC
 void calculateMQ135Gases(int adc_value) {
   float voltaje = adc_value * (5.0 / 1023.0);
   ppm_nh3 = constrain(voltaje * 10.0,           0,   200);
@@ -363,8 +364,16 @@ void calculateMQ135Gases(int adc_value) {
   ppm_co2 = constrain(350.0 + (voltaje * 1000.0), 350, 10000);
 }
 
-//  CÁLCULO SO2/H2S — MQ136 
+/**
+ * Cálculo aproximado de SO2 a partir del ADC del MQ136.
+ * NOTA: El MQ136 es principalmente sensible a H2S y también responde a SO2.
+ * Para mediciones de precisión se requiere calibración con gas patrón
+ * y aplicar la curva logarítmica Rs/R0 del datasheet.
+ * Esta fórmula es una estimación lineal, coherente con el estilo usado
+ * para MQ7 y MQ131 en este proyecto.
+ */
 float calculateMQ136SO2(int adc_value) {
   float voltaje = adc_value * (5.0 / 1023.0);
+    // Factor de escala aproximado: rango típico 1-200 ppm para SO2/H2S
   return constrain(voltaje * 40.0, 0, 200);
 }
